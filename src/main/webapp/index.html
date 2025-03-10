@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>메뉴 추천기</title>
+    <style>
+        @font-face {
+            font-family: 'CookieRun-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/CookieRun-Regular.woff') format('woff');
+        }
+        *{
+            font-family: CookieRun-Regular, serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        body > div{
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #controller * {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div id="response">여기에 결과가 표시됩니다.</div>
+        <form id="controller">
+            <div>
+                <input id = "prompt">
+            </div>
+            <div>
+                <select id = "model">
+                    <option value="GROQ_LLAMA">GROQ</option>
+                    <option value="TOGETHER_LLAMA">TOGETHER</option>
+                </select>
+            </div>
+            <button id = "btn">표시</button>
+        </form>
+    </div>
+    <script>
+        const controller = document.querySelector("#controller");
+        const btn = document.querySelector(("#btn"))
+        controller.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const prompt = document.querySelector("#prompt").value;
+            const model = document.querySelector("#model").value;
+            btn.disabled = true;
+            const response = await fetch(`./api?prompt=${prompt}&model=${model}`, {
+                headers: {
+                    "Content-Type":"application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            btn.disabled = false;
+            document.querySelector("#response").textContent = json.content;
+        })
+    </script>
+</body>
+</html>
